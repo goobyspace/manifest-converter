@@ -13,11 +13,13 @@ import "./App.css";
 //if the manifest textarea gets updated (its the singular manifest useState) the second useEffect will get called
 //this will check which manifests are checked and then create a patch.json file based on the checked ones
 
+//also its one big file because its basically one function, easier this way since it won't get more functionality rather than splitting things up
 function App() {
   const [manifest, setManifest] = useState(
     "Paste or upload manifest.json here"
   );
   const [patch, setPatch] = useState("The patch.json will appear here");
+  const [error, setError] = useState("");
   const [manifests, setManifests] = useState<Array<manifestListItem>>([]);
   const [checks, setChecks] = useState<Array<number>>([]);
 
@@ -57,23 +59,48 @@ function App() {
 
       reader.onload = function () {
         const fileName: string = file.name.replace(".manifest.json", ".m2");
-        const manifestJSON = JSON.parse(reader.result as string);
+        let manifestJSON: ManifestJSON | undefined;
+        try {
+          manifestJSON = JSON.parse(reader.result as string);
+          if (manifestJSON && manifestJSON.fileDataID === undefined) {
+            throw new SyntaxError(
+              "fileDataID is missing, did you upload a manifest.json file?"
+            );
+          }
+          if (manifestJSON) {
+            const fileDataId = manifestJSON["fileDataID"] as number;
+            manifestJSON["filename"] = [
+              { fileDataID: fileDataId, file: fileName },
+            ];
 
-        const fileDataId = manifestJSON["fileDataID"] as number;
-        manifestJSON["filename"] = [{ fileDataID: fileDataId, file: fileName }];
+            //no duplicates
+            if (
+              !manifests.find((manifest) => manifest.fileDataID === fileDataId)
+            ) {
+              setChecks([...checks, fileDataId]);
 
-        //no duplicates
-        if (!manifests.find((manifest) => manifest.fileDataID === fileDataId)) {
-          setChecks([...checks, fileDataId]);
-
-          setManifests([
-            ...manifests,
-            {
-              fileDataID: fileDataId,
-              fileName: fileName,
-              manifest: manifestJSON,
-            },
-          ]);
+              setManifests([
+                ...manifests,
+                {
+                  fileDataID: fileDataId,
+                  fileName: fileName,
+                  manifest: manifestJSON,
+                },
+              ]);
+            } else {
+              throw new SyntaxError(
+                "duplicate fileDataID found, did you upload the same file twice?"
+              );
+            }
+          }
+        } catch (error) {
+          if (error instanceof SyntaxError) {
+            setError(
+              "There was a syntax error. Error message: " + error.message
+            );
+          } else {
+            setError("Enter a valid json input");
+          }
         }
       };
     }
@@ -189,6 +216,13 @@ function App() {
 
   return (
     <>
+      <span className={error.length > 0 ? "error visible" : "error hidden"}>
+        {error}
+        <button onClick={() => setError("")}>
+          <img src={closeIcon} className="error-icon" alt="Close icon" />
+        </button>
+      </span>
+
       <h1>
         Manifest Converter
         <img src={manifestIcon} className="logo" alt="Convert icon" />
