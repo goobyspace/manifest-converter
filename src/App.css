@@ -11,6 +11,10 @@ html {
   text-align: center;
 }
 
+p {
+  margin-bottom: 2rem;
+}
+
 .logo {
   width: 24px;
   margin-top: -4px;
@@ -19,11 +23,8 @@ html {
 }
 
 .input-upload {
-  text-align: left;
+  text-align: right;
   margin-bottom: 1rem;
-  .button {
-    width: 150px;
-  }
 }
 
 .button {
@@ -31,10 +32,13 @@ html {
   background-color: #1c1d26;
   color: #fab03d;
   border: 1px solid #f2e5bc;
+  width: 200px;
+  text-align: center;
+  box-sizing: border-box;
   border-radius: 4px;
   padding: 0.5rem 1rem;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: 0.3s;
   font-size: 12px;
 
   &:hover {
@@ -64,23 +68,8 @@ html {
     flex-shrink: 0;
 
     .output-download {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      align-items: center;
+      text-align: left;
       margin-bottom: 1rem;
-
-      .button {
-        width: 250px;
-      }
-
-      input {
-        background-color: #21222d;
-        color: #fab03d;
-        border: 1px solid #f2e5bc;
-        width: 250px;
-        padding: 0.5rem;
-      }
     }
 
     textarea {

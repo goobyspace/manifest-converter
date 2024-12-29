@@ -8,8 +8,7 @@ function App() {
   const [manifest, setManifest] = useState(
     "Paste or upload manifest.json here"
   );
-  const [patch, setPatch] = useState("The patch .json will appear here");
-  const [fileName, setFileName] = useState("filename");
+  const [patch, setPatch] = useState("The patch.json will appear here");
 
   interface ManifestJSON {
     [key: string]:
@@ -111,7 +110,7 @@ function App() {
     const a = document.createElement("a"),
       url = URL.createObjectURL(file);
     a.href = url;
-    a.download = fileName + ".json";
+    a.download = "patch.json";
     document.body.appendChild(a);
     a.click();
     setTimeout(function () {
@@ -123,19 +122,19 @@ function App() {
   return (
     <>
       <h1>
-        Manifest converter{" "}
+        Manifest Converter
         <img src={manifestIcon} className="logo" alt="Convert icon" />
       </h1>
       <p>
-        Paste manifest .json file from wow.export on the left, copy or save the
-        patch .json from the right.
+        Paste manifest.json file from wow.export on the left, copy or save the
+        patch.json from the right.
       </p>
       <div className="main-container">
         <div className="input-container container">
           <div className="input-upload">
             <form>
               <label htmlFor="upload" className="button">
-                Upload manifest .json
+                Upload manifest.json
                 <img src={uploadIcon} className="icon" alt="Upload icon" />
               </label>
               <input
@@ -155,12 +154,8 @@ function App() {
         </div>
         <div className="output-container container">
           <div className="output-download">
-            <input
-              value={fileName + ".json"}
-              onChange={(e) => setFileName(e.target.value.replace(".json", ""))}
-            />
             <button className="button" onClick={downloadPatch}>
-              Download {fileName}.json
+              Download patch.json
               <img src={downloadIcon} className="icon" alt="Download icon" />
             </button>
           </div>
