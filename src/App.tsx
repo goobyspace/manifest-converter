@@ -51,58 +51,63 @@ function App() {
   }
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.item(0);
-    if (file) {
-      const reader = new FileReader();
+    const length = event.target.files?.length || 0;
+    const newChecks = [...checks];
+    const newManifests = [...manifests];
 
-      reader.readAsText(file);
+    for (let i = 0; i < length; i++) {
+      const file = event.target.files?.item(i);
+      if (file) {
+        const reader = new FileReader();
 
-      reader.onload = function () {
-        const fileName: string = file.name.replace(".manifest.json", ".m2");
-        let manifestJSON: ManifestJSON | undefined;
-        try {
-          manifestJSON = JSON.parse(reader.result as string);
-          if (manifestJSON && manifestJSON.fileDataID === undefined) {
-            throw new SyntaxError(
-              "fileDataID is missing, did you upload a manifest.json file?"
-            );
-          }
-          if (manifestJSON) {
-            const fileDataId = manifestJSON["fileDataID"] as number;
-            manifestJSON["filename"] = [
-              { fileDataID: fileDataId, file: fileName },
-            ];
+        reader.readAsText(file);
 
-            //no duplicates
-            if (
-              !manifests.find((manifest) => manifest.fileDataID === fileDataId)
-            ) {
-              setChecks([...checks, fileDataId]);
+        reader.onload = function () {
+          const fileName: string = file.name.replace(".manifest.json", ".m2");
+          let manifestJSON: ManifestJSON | undefined;
+          try {
+            manifestJSON = JSON.parse(reader.result as string);
+            if (manifestJSON && manifestJSON.fileDataID === undefined) {
+              throw new SyntaxError(
+                "fileDataID is missing, did you upload a manifest.json file?"
+              );
+            }
+            if (manifestJSON) {
+              const fileDataId = manifestJSON["fileDataID"] as number;
+              manifestJSON["filename"] = [
+                { fileDataID: fileDataId, file: fileName },
+              ];
 
-              setManifests([
-                ...manifests,
-                {
+              //no duplicates
+              if (
+                !newManifests.find(
+                  (manifest) => manifest.fileDataID === fileDataId
+                )
+              ) {
+                newChecks.push(fileDataId);
+                newManifests.push({
                   fileDataID: fileDataId,
                   fileName: fileName,
                   manifest: manifestJSON,
-                },
-              ]);
+                });
+
+                setChecks([...newChecks]);
+                setManifests([...newManifests]);
+              } else {
+                throw new SyntaxError(
+                  "duplicate fileDataID found, did you upload the same file twice?"
+                );
+              }
+            }
+          } catch (error) {
+            if (error instanceof SyntaxError) {
+              setError("There was an error. Error message: " + error.message);
             } else {
-              throw new SyntaxError(
-                "duplicate fileDataID found, did you upload the same file twice?"
-              );
+              setError("Enter a valid json input");
             }
           }
-        } catch (error) {
-          if (error instanceof SyntaxError) {
-            setError(
-              "There was a syntax error. Error message: " + error.message
-            );
-          } else {
-            setError("Enter a valid json input");
-          }
-        }
-      };
+        };
+      }
     }
   };
 
@@ -228,8 +233,8 @@ function App() {
         <img src={manifestIcon} className="logo" alt="Convert icon" />
       </h1>
       <p>
-        Upload manifest.json files from wow.export on the left, copy or save the
-        combined patch.json from the right.
+        Upload (multiple) manifest.json files from wow.export on the left, copy
+        or save the combined patch.json from the right.
       </p>
       <div className="main-container">
         <div className="input-container container">
@@ -242,6 +247,7 @@ function App() {
               <input
                 id="upload"
                 type="file"
+                multiple
                 accept=".json"
                 onChange={handleFileUpload}
               />
@@ -251,7 +257,14 @@ function App() {
             Files uploaded:
             {manifests.map((manifest, key) => {
               return (
-                <span key={key}>
+                <span
+                  key={key}
+                  className={`${
+                    checks.includes(manifest.fileDataID)
+                      ? "checked"
+                      : "unchecked"
+                  } ${key % 2 == 0 ? "even" : "odd"}`}
+                >
                   <input
                     type="checkbox"
                     checked={checks.includes(manifest.fileDataID)}
