@@ -27,6 +27,42 @@ p {
   margin-bottom: 1rem;
 }
 
+.file-list {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  text-align: left;
+  margin-bottom: 1rem;
+
+  input {
+    accent-color: #fab03d;
+  }
+
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 64px;
+    height: 24px;
+    width: 24px;
+    font-size: 16px;
+    top: 5px;
+    left: 5px;
+    padding: 0;
+    position: relative;
+    background-size: 0%;
+    transition: 0.2s;
+
+    &:hover {
+      background-color: #d02f22;
+      img {
+        filter: brightness(0) saturate(100%) invert(8%) sepia(6%) saturate(557%)
+          hue-rotate(165deg) brightness(101%) contrast(96%);
+      }
+    }
+  }
+}
+
 .button {
   display: block;
   background-color: #1c1d26;
@@ -66,6 +102,9 @@ p {
   .container {
     flex-grow: 1;
     flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
 
     .output-download {
       text-align: left;
@@ -79,7 +118,7 @@ p {
       border: 1px solid #f2e5bc;
       width: 100%;
       min-width: 510px;
-      height: 80vh;
+      flex-grow: 1;
       resize: none;
     }
   }
