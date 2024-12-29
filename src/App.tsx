@@ -17,7 +17,7 @@ function App() {
           fileDataID: number;
           file: string;
         }>
-      | string;
+      | number;
   }
   interface PatchJSON {
     name: string | null;
@@ -26,7 +26,7 @@ function App() {
     files: Array<{ file: string; id: number }>;
   }
 
-  const createPatch = (json: string) => {
+  const createPatch = (json: string, fileName?: string) => {
     let manifestJSON: ManifestJSON | undefined;
 
     try {
@@ -34,11 +34,11 @@ function App() {
     } catch (error) {
       if (error instanceof SyntaxError) {
         setPatch(
-          "There was a syntax error. Please correct it and try again: " +
+          "There was a syntax error. Here is the automated error: " +
             error.message
         );
       } else {
-        setPatch("Enter a valid manifest.json input");
+        setPatch("Enter a valid json input");
       }
     } finally {
       if (manifestJSON) {
@@ -49,6 +49,12 @@ function App() {
           files: [],
         };
         const manifestKeys = Object.keys(manifestJSON);
+        if (fileName) {
+          patchJSON.files.push({
+            file: fileName,
+            id: manifestJSON["fileDataID"] as number,
+          });
+        }
         manifestKeys.forEach((key) => {
           const type: string = typeof (manifestJSON as ManifestJSON)[key];
           if (
@@ -61,7 +67,10 @@ function App() {
                 file: string;
               }>
             ).map((file) => {
-              return { file: file.file, id: file.fileDataID };
+              return {
+                file: file.file.toString().split("\\").slice(-1)[0],
+                id: file.fileDataID,
+              };
             });
 
             patchJSON.files.push(...files);
@@ -88,7 +97,8 @@ function App() {
       reader.readAsText(file);
 
       reader.onload = function () {
-        createPatch(reader.result as string);
+        const fileName: string = file.name.replace(".manifest.json", ".m2");
+        createPatch(reader.result as string, fileName);
         setManifest(reader.result as string);
       };
     }
@@ -117,15 +127,15 @@ function App() {
         <img src={manifestIcon} className="logo" alt="Convert icon" />
       </h1>
       <p>
-        Paste manifest.json file from wow.export on the left, copy or save the
-        patch.json from the right.
+        Paste manifest .json file from wow.export on the left, copy or save the
+        patch .json from the right.
       </p>
       <div className="main-container">
         <div className="input-container container">
           <div className="input-upload">
             <form>
               <label htmlFor="upload" className="button">
-                Upload manifest.json
+                Upload manifest .json
                 <img src={uploadIcon} className="icon" alt="Upload icon" />
               </label>
               <input

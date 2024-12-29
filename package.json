@@ -2,7 +2,7 @@
   "name": "manifest-converter",
   "private": true,
   "version": "0.0.0",
-  "homepage": "http://gooby.space/manifest-converter/",
+  "homepage": "https://gooby.space/manifest-converter/",
   "type": "module",
   "scripts": {
     "deploy": "gh-pages -d dist",
