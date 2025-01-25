@@ -7,7 +7,6 @@ html {
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
   text-align: center;
 }
 
@@ -71,6 +70,9 @@ p {
 .input-upload {
   text-align: right;
   margin-bottom: 1rem;
+  .button {
+    padding: 0.5rem calc(1rem + 1px);
+  }
 }
 
 .file-list {
@@ -194,5 +196,72 @@ p {
       flex-grow: 1;
       resize: none;
     }
+  }
+}
+
+.tabs-container {
+  display: flex;
+  justify-content: center;
+  border-bottom: solid 1px #f2e5bc;
+  margin-bottom: 1rem;
+  .tab {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border: 1px solid #f2e5bc;
+    border-radius: 4px 4px 0 0;
+    transition: 0.3s;
+
+    &.selected {
+      background-color: #fab03d;
+      color: #1c1d26;
+    }
+
+    &.active {
+      background-color: #fab03d;
+      color: #1c1d26;
+    }
+
+    &:hover {
+      background-color: #fab03d;
+      color: #1c1d26;
+    }
+  }
+}
+
+.combine-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.5rem;
+  height: 80vh;
+
+  .button-header {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+
+    .input-upload {
+      margin-bottom: 1rem;
+      .button {
+        height: 34px;
+      }
+    }
+
+    .output-download {
+      text-align: left;
+      margin-bottom: 1rem;
+    }
+  }
+
+  #combine-textarea {
+    box-sizing: border-box;
+    background-color: #21222d;
+    color: #fab03d;
+    border: 1px solid #f2e5bc;
+    width: 100%;
+    min-height: 210px;
+    flex-grow: 1;
+    resize: none;
   }
 }
